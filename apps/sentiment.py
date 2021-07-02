@@ -18,10 +18,10 @@ def app():
      st.stop()
     
     # Claves de acceso para la API de twitter
-    consumerKey = 'G0vejr3gbdJuZZGNwcQ3BCxvl'
-    consumerSecret = 'cXseF4Azu5RLXqZq09gr3ABCn0zn7OGLrCV7liQiLwM0rSoNc1'
-    accessToken = '1350780188142039041-d7OL01iOSmwloA7TfC6kihQhJXRz6u'
-    accessTokenSecret = 'IHdUA4SbQmw4Ja1vqt1qXPZgK5DZOZm6bkmlOWTiox8aI'
+    consumerKey = 'f0y99pKjB4x2SNBHtK5fiD4IB'
+    consumerSecret = 'jJXTcEuriPbjEzDvrBsXQ3eBeAOl2oqKaiwoUlhpRKPzHbcyAu'
+    accessToken = '1350780188142039041-3NZlpno82LwUqlxL1SFTrHwzLs9luY'
+    accessTokenSecret = 'B3KCfjNhCUR5glKMdqkK9Sjp5CEIOxGEBxQ4yJfkPMD4h'
     
     # Autenticar el acceso a la API
     auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
@@ -34,7 +34,7 @@ def app():
     
     # Obtener n tweets relacionados con term y filtrar por nº de RT
     term = '#'+ ticker + ' -filter:retweets'
-    get_tweets = tweepy.Cursor(api.search, q=term, lang = "en", since=start, tweet_mode='extended').items(50)
+    get_tweets = tweepy.Cursor(api.search, q=term, lang = "en", since=start, tweet_mode='extended').items(100)
     tweets = [tweet.full_text for tweet in get_tweets]
     df = pd.DataFrame(tweets, columns=['Tweets'])
     
