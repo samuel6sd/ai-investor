@@ -14,7 +14,5 @@ class MultiApp:
         })
 
     def run(self):
-        #app = st.sidebar.selectbox('', self.apps, format_func=lambda app: app['title'], )
         app = st.sidebar.selectbox('Apps', self.apps, format_func=lambda app: app['title'], )
-
         app['function']()
