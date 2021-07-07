@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
-
-# Importar librer铆as
+# Importar librer憝as
 import streamlit as st
 import pandas as pd
 import yfinance as yf
 from fbprophet import Prophet
 from fbprophet.plot import plot_plotly
 
-# FORECAST
+# Funci髇 de la app FORECAST
 def app():
-    # Colecci贸n de tickers
+    # Colecci髇 de tickers
     tickers = pd.read_csv("tickers.csv", delimiter=';')
     tickers = tickers.set_index('Symbol')
     
-    # T铆tulo
-    st.title('Pron贸stico a largo plazo del precio de un activo')
+    # T憝tulo
+    st.title('Pron髎tico a largo plazo del precio de un activo')
     
     # Seleccionar activo
     ticker = st.selectbox('Ticker', tickers.index)
@@ -23,26 +21,26 @@ def app():
      st.stop()
     com = tickers.loc[ticker,'Name']
     
-    # Obtener y visualizar datos hist贸ricos de la acci贸n seleccionada
+    # Obtener y visualizar datos hist髍icos de la acci髇 seleccionada
     data = yf.download(ticker, start="2015-01-01")
-    # Gr谩fico
+    # Gr醘ico
     st.subheader('Precio de cierre de ' + com)
     st.line_chart(data['Close'], use_container_width=True)
     data['Date'] = data.index.strftime("%Y-%m-%d")
     df = data.set_index('Date')  
     # Datos
-    st.subheader('Datos hist贸ricos de ' + com)
+    st.subheader('Datos hist髍icos de ' + com)
     st.write(df)
     df['Date'] = data.index
 
-    # PRON脫STICO LARGO PLAZO
-    st.subheader('Pron贸stico a largo plazo del precio de ' + com)
+    # PRON訐STICO LARGO PLAZO
+    st.subheader('Pron髎tico a largo plazo del precio de ' + com)
     
-    # Seleccionar los a帽os para el pron贸stico
+    # Seleccionar los a駉s para el pron髎tico
     years = st.slider('A帽os a predecir:', 1, 5)
     period = years*365
     
-    # Modificar dataset para que coincida con el m贸dulo Prophet
+    # Modificar dataset para que coincida con el m骴ulo Prophet
     df = data[["Date","Close"]]
     df = df.rename(columns={"Date": "ds", "Close": "y"})
     
@@ -51,13 +49,13 @@ def app():
     m.fit(df)
     future = m.make_future_dataframe(periods=period)
     forecast = m.predict(future)
-    st.success(f'Pron贸stico ajustado para los pr贸ximos {years} a帽o/s:')
+    st.success(f'Pron髎tico ajustado para los pr髕imos {years} a駉/s:')
     
-    # Mostrar pron贸stico
+    # Mostrar pron髎tico
     fig2 = plot_plotly(m, forecast, xlabel='Fecha', ylabel='Precio')
     st.plotly_chart(fig2, True)
-    # Mostrar componentes del pron贸stico
-    st.subheader("Componentes del pron贸stico")
+    # Mostrar componentes del pron髎tico
+    st.subheader("Componentes del pron髎tico")
     fig3 = m.plot_components(forecast)
     st.write(fig3)
     

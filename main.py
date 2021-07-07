@@ -1,3 +1,4 @@
+# Importar librer憝as
 import streamlit as st
 from multiapp import MultiApp
 from apps import markets, forecast, prediction, sentiment, portfolio
@@ -9,34 +10,36 @@ main = MultiApp()
 
 # Apps disponibles
 main.add_app("Mercados financieros", markets.app)
-main.add_app("Pron贸stico largo plazo", forecast.app)
-main.add_app("Predicci贸n corto plazo", prediction.app)
+main.add_app("Pron髎tico largo plazo", forecast.app)
+main.add_app("Predicci髇 corto plazo", prediction.app)
 main.add_app("An谩lisis de sentimiento", sentiment.app)
 main.add_app("Optimizador de carteras", portfolio.app)
 
-# Aplicaci贸n principal
+# Logo t铆tulo y llamada ejecuci髇 de la aplicaci髇 seleccionada
 st.image('logo.png')
 st.sidebar.title('AI-INVESTOR')
 main.run()
 
-# Login
+# Conexi髇 con la base de datos users
 con = sqlite3.connect('users.sqlite3')
 cur = cur = con.cursor()
-user = st.sidebar.text_input('Usuario')
-psw = st.sidebar.text_input('Contrase帽a', type= 'password')
 
-if st.sidebar.button('Iniciar sesi贸n'):
+# Formulario de login
+user = st.sidebar.text_input('Usuario')
+psw = st.sidebar.text_input('Contrase馻', type= 'password')
+# Inicio de sesi髇
+if st.sidebar.button('Iniciar sesi髇'):
     statement = f"SELECT username from users WHERE username='{user}' AND Password = '{psw}';"
     cur.execute(statement)
     if not cur.fetchone():
-        st.sidebar.write("Inicio de sesi贸n fallido")
+        st.sidebar.write("Inicio de sesi髇 fallido")
     else:
-        st.sidebar.write("Sesi贸n iniciada")
-        
+        st.sidebar.write("Sesi髇 iniciada")
+# Registro        
 if st.sidebar.button('Registrarse'):
     cur.execute("INSERT INTO users VALUES (?, ?)", (user, psw))
     con.commit()
     
-# Base de datos de los tickers disponibles para analizar
+# Base de datos de los tickers disponibles
 tickers = pd.read_csv("tickers.csv", delimiter=';')
 tickers = tickers.set_index('Symbol')

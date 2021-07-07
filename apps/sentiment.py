@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
-
-# Importar librer√≠as
+# Importar librerÌ≠as
 import streamlit as st
 import tweepy, re
 import pandas as pd
 from textblob import TextBlob
 import matplotlib.pyplot as plt
 
-# SENTIMENT
+# FunciÛn de la app SENTIMENT
 def app():
-    # T√≠tulo
-    st.title('An√°lisis de sentimiento')
+    # TÌ≠tulo
+    st.title('An·lisis de sentimiento')
     
-    ticker = st.text_input('T√©rmino')
+    ticker = st.text_input('TÈrmino')
     if ticker == '':
-     st.warning('Por favor, selecciona un t√©rmino')
+     st.warning('Por favor, selecciona un tÈrmino')
      st.stop()
     
     # Claves de acceso para la API de twitter
@@ -30,15 +28,15 @@ def app():
     
     # Seleccionar fechas
     start = st.date_input("Selecciona la fecha de inicio")
-    st.write("Se recopilar√°n los tweets con m√°s repercusi√≥n desde la fecha de inicio hasta hoy.")
+    st.write("Se recopilar·n los tweets con m·s repercusiÛn desde la fecha de inicio hasta hoy.")
     
-    # Obtener n tweets relacionados con term y filtrar por n¬∫ de RT
+    # Obtener n tweets relacionados con term y filtrar por n∫ de RT
     term = '#'+ ticker + ' -filter:retweets'
     get_tweets = tweepy.Cursor(api.search, q=term, lang = "en", since=start, tweet_mode='extended').items(100)
     tweets = [tweet.full_text for tweet in get_tweets]
     df = pd.DataFrame(tweets, columns=['Tweets'])
     
-    # Funci√≥n para formatear los tweets
+    # FunciÛn para formatear los tweets
     def cleanTwt(twt):
       twt = re.sub('#'+ticker, ticker, twt) # Eliminar '#' del ticker
       twt = re.sub('#[A-Za-z0-9]+', '', twt) # Eliminar cualquier otro '#'
@@ -49,10 +47,10 @@ def app():
     # Se crea una lista con los tweets formateados
     df['Cleaned_Tweets'] = df['Tweets'].apply(cleanTwt)
     
-    # Funci√≥n para obtener la subjetividad
+    # FunciÛn para obtener la subjetividad
     def getSub(twt):
       return TextBlob(twt).sentiment.subjectivity
-    # Funci√≥n para obtener la polaridad
+    # FunciÛn para obtener la polaridad
     def getPol(twt):
       return TextBlob(twt).sentiment.polarity
     
@@ -60,7 +58,7 @@ def app():
     df['Subjectivity'] = df['Cleaned_Tweets'].apply(getSub)
     df['Polarity']  = df['Cleaned_Tweets'].apply(getPol)
     
-    # Funci√≥n para clasificar tweets en base a su sentimiento
+    # FunciÛn para clasificar tweets en base a su sentimiento
     def getSen(pol):
       if pol == 0:
         return 'Neutral'
@@ -76,17 +74,17 @@ def app():
     # Crear la columna de sentimiento
     df['Sentiment'] = df['Polarity'].apply(getSen)   
     
-    # Gr√°fico de puntos para mostrar subjetividad y polaridad
+    # Gr·fico de puntos para mostrar subjetividad y polaridad
     fig1 = plt.figure()
     ax1 = fig1.add_subplot()
     for i in range(0, df.shape[0]):
       ax1.scatter(df['Polarity'][i], df['Subjectivity'][i], color='blue')
-    ax1.set_title('An√°lisis de subjetividad / polaridad')
+    ax1.set_title('An·lisis de subjetividad / polaridad')
     ax1.set_xlabel('Polaridad')
     ax1.set_ylabel('Subjetividad')
     st.pyplot(fig1)
     
-    # Gr√°fico de barras
+    # Gr·fico de barras
     count = df['Sentiment'].value_counts()
     st.bar_chart(count)
     st.write(count)

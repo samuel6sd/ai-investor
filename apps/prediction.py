@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# Importar librer√≠as
+# Importar librerÌ≠as
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -10,14 +8,14 @@ from keras.models import Model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation, concatenate
 from keras import optimizers
 
-# PREDICTION
+# FunciÛn de la app PREDICTION
 def app():
-    # Colecci√≥n de tickers
+    # ColecciÛn de tickers
     tickers = pd.read_csv("tickers.csv", delimiter=';')
     tickers = tickers.set_index('Symbol')
     
-    # T√≠tulo
-    st.title('Pron√≥stico a corto plazo del precio de un activo')
+    # TÌ≠tulo
+    st.title('PronÛstico a corto plazo del precio de un activo')
     
     # Seleccionar activo
     ticker = st.selectbox('Ticker', tickers.index)
@@ -26,23 +24,23 @@ def app():
      st.stop()
     com = tickers.loc[ticker,'Name']
     
-    # Obtener y visualizar datos hist√≥ricos de la acci√≥n seleccionada
+    # Obtener y visualizar datos histÛricos de la acciÛn seleccionada
     data = yf.download(ticker, start="2016-01-01")
-    # Gr√°fico
+    # Gr·fico
     st.subheader('Precio de cierre de ' + com)
     mes = data['Close'].tail(365)
     st.line_chart(mes, use_container_width=True)
     data['Date'] = data.index.strftime("%Y-%m-%d")
     df = data.set_index('Date')  
     # Datos
-    st.subheader('Datos de los √∫ltimos 60 d√≠as de ' + com)
+    st.subheader('Datos de los ˙ltimos 60 dÌ≠as de ' + com)
     st.write(df.tail(60))
     df['Date'] = data.index
         
     # Preparar los datos
     df = df[['Close', 'Open', 'High', 'Low']]
     
-    # Escalar los datos (sc para el conjunto de entrenamiento y price_sc para la predicci√≥n)
+    # Escalar los datos (sc para el conjunto de entrenamiento y price_sc para la predicciÛn)
     close = np.array(df['Close']).reshape(-1, 1)
     train_sc = MinMaxScaler()
     price_sc = MinMaxScaler()
@@ -52,7 +50,7 @@ def app():
     # X1 : Datos (Close, Open, High, Low) - 60 valores predicen el siguiente
     x1_train = np.array([df_train[i : i + 60].copy() for i in range(len(df_train) - 60)])
     
-    # X2 : Media del precio de cierre para una ventana de 60 d√≠as
+    # X2 : Media del precio de cierre para una ventana de 60 dÌ≠as
     x2_train = []
     for h in x1_train:
       sma = np.mean(h[:,0])
@@ -62,7 +60,7 @@ def app():
     # Y : Valores a predecir ; close
     y_train = np.array([df_train[:,0][i + 60].copy() for i in range(len(df_train) - 60)])
     
-    # Comprobar que todos los conjuntos tienen el mismo n¬∫ de filas
+    # Comprobar que todos los conjuntos tienen el mismo n∫ de filas
     assert x1_train.shape[0] == x2_train.shape[0] == y_train.shape[0]
     
     # Definir el formato de las dos entradas de la red neuronal
@@ -92,8 +90,8 @@ def app():
     model.fit(x=[x1_train, x2_train], y=y_train, batch_size=32, epochs=50, shuffle=True)
     st.success('Modelo entrenado')
     
-    # Se realiza una predicci√≥n para el d√≠a actual y el d√≠a siguiente
-    # Esto permitir√° comparar las predicciones y clasificar el movimiento del precio
+    # Se realiza una predicciÛn para el dÌ≠a actual y el dÌ≠a siguiente
+    # Esto permitir· comparar las predicciones y clasificar el movimiento del precio
     df_pred = df_train[len(df_train)-61:, :]
     x1_pred = np.array([df_pred[i : i + 60].copy() for i in range(2)])
     x2_pred = []
@@ -105,10 +103,10 @@ def app():
     fut = model.predict([x1_pred, x2_pred])
     fut = price_sc.inverse_transform(fut)
     
-    # Previsi√≥n de si el precio va a subir o a bajar en funci√≥n a los 60 √∫ltimos d√≠as
+    # PrevisiÛn de si el precio va a subir o a bajar en funciÛn a los 60 ˙ltimos dÌ≠as
     dif = ((fut[-1] - fut[-2]) / fut[-2]) * 100
     if fut[-1] > fut[-2]:
-      st.markdown(f'_El modelo predice que el precio subir√° ma√±ana {dif.round(2)}%_')
+      st.markdown(f'_El modelo predice que el precio subir· maÒana {dif.round(2)}%_')
     else:
-      st.markdown(f'_El modelo predice que el precio bajar√° ma√±ana {dif.round(2)}%_')
+      st.markdown(f'_El modelo predice que el precio bajar· maÒana {dif.round(2)}%_')
 

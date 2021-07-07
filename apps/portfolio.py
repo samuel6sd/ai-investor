@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# Importar librerÃ­as
+# Importar librerí­as
 import streamlit as st
 import pandas as pd
 import yfinance as yf
@@ -12,12 +10,12 @@ from pypfopt import risk_models
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 
-# PORTFOLIO
+# Función de la app PORTFOLIO
 def app():
-    # TÃ­tulo
+    # Tí­tulo
     st.title('Optimizador de carteras')
     
-    # ColecciÃ³n de tickers
+    # Colección de tickers
     tickers = pd.read_csv("tickers.csv", delimiter=';')
     
     portfolio = st.multiselect('Selecciona los activos a incluir en la cartera', tickers['Symbol'])
@@ -29,7 +27,7 @@ def app():
     df = pd.DataFrame()
     df = yf.download(portfolio, data_source='yahoo', start='2016-01-01')['Adj Close']
     
-    # Visualizar comportamiento del precio de cada acciÃ³n
+    # Visualizar comportamiento del precio de cada acción
     st.subheader('Comportamiento del precio de las acciones')
     st.line_chart(df, use_container_width=True)
     
@@ -37,8 +35,8 @@ def app():
     mu = expected_returns.mean_historical_return(df, compounding=False) 
     S = risk_models.risk_matrix(df, method='sample_cov')
     
-    # Visualizar matriz de correlaciÃ³n a partir de la matriz de covarianza
-    st.subheader('Matriz de correlaciÃ³n')
+    # Visualizar matriz de correlación a partir de la matriz de covarianza
+    st.subheader('Matriz de correlación')
     risk_models.cov_to_corr(S)
     fig1, ax1 = plt.subplots(figsize=(15,10)) 
     mat = np.triu(risk_models.cov_to_corr(S))
@@ -53,12 +51,12 @@ def app():
     cw = pd.DataFrame(cleaned_weights.values(), cleaned_weights.keys(), ['Pesos'])
     cw = cw.drop(cw[cw['Pesos'] <= 0].index)
     
-    # VisualizaciÃ³n de pesos optimizados
-    st.subheader('DistribuciÃ³n Ã³ptima de los pesos')
+    # Visualización de pesos optimizados
+    st.subheader('Distribución óptima de los pesos')
     fig2 = plt.figure()
     ax2 = fig2.add_subplot()
     ax2.pie(cw['Pesos'], labels=cw.index, autopct='%1.1f%%', startangle=90)
-    ax2.set_title('ParticipaciÃ³n de cada activo')
+    ax2.set_title('Participación de cada activo')
     st.pyplot(fig2)
     
     # Resultados del portafolio optimizado
@@ -73,19 +71,19 @@ def app():
     
     
     # Seleccionar capital a invertir
-    st.subheader('ConfiguraciÃ³n de cartera personal')
+    st.subheader('Configuración de cartera personal')
     capital = st.slider("Capital a invertir", 0, 1000000, step=1000)
     if capital == 0:
         st.stop()
         
-    # NÂº de acciones a comprar de cada compaÃ±Ã­a y dinero sobrante
+    # Nº de acciones a comprar de cada compañí­a y dinero sobrante
     latest_prices = get_latest_prices(df)
     da = DiscreteAllocation(weights, latest_prices, total_portfolio_value=capital)
     allocation, leftover = da.lp_portfolio()
-    allocation = pd.DataFrame(data=allocation.values(), index=allocation.keys(), columns=['NÂº de acciones'])
+    allocation = pd.DataFrame(data=allocation.values(), index=allocation.keys(), columns=['Nº de acciones'])
     
     # Resultados
-    st.write('ComposiciÃ³n de la cartera: ')
+    st.write('Composición de la cartera: ')
     st.write(allocation)
     st.write(f'Dinero restante: {leftover.round(2)}$')
     
