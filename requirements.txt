@@ -15,4 +15,3 @@ tweepy
 seaborn
 cvxopt
 cvxpy
-sqlite3
