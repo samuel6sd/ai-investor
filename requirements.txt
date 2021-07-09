@@ -2,9 +2,10 @@ streamlit
 yfinance
 textblob
 numpy
-pystan
+pystan==2.19.1.1
 fbprophet
 prophet
+plotly
 pyportfolioopt
 pandas
 matplotlib
